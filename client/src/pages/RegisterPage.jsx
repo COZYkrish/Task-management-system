@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Zap, UserPlus } from 'lucide-react';
-import { registerUser, selectAuthLoading, selectAuthError, clearError } from '../../features/auth/authSlice';
+import { registerUser, selectAuthLoading, selectAuthError, clearError } from '../features/auth/authSlice';
 import toast from 'react-hot-toast';
 
 export default function RegisterPage() {

@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Zap, LogIn } from 'lucide-react';
-import { loginUser, selectAuthLoading, selectAuthError, clearError } from '../../features/auth/authSlice';
+import { loginUser, selectAuthLoading, selectAuthError, clearError } from '../features/auth/authSlice';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
