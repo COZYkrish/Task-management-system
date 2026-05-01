@@ -1,5 +1,5 @@
 // Prisma schema for TaskFlow Pro
-// Datasource: SQLite for local dev (swap to postgresql for production)
+// Using Prisma v5 (compatible with url in schema)
 
 generator client {
   provider = "prisma-client-js"
@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -28,16 +28,16 @@ model User {
 }
 
 model Task {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   title       String
   description String?
-  status      String   @default("TODO")      // TODO | IN_PROGRESS | COMPLETED
-  priority    String   @default("MEDIUM")    // LOW | MEDIUM | HIGH
+  status      String    @default("TODO")    // TODO | IN_PROGRESS | COMPLETED
+  priority    String    @default("MEDIUM")  // LOW | MEDIUM | HIGH
   dueDate     DateTime?
-  tags        String   @default("[]")        // JSON stringified array
-  order       Int      @default(0)           // For Kanban ordering
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  tags        String    @default("[]")      // JSON stringified array
+  order       Int       @default(0)         // For Kanban ordering
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   // Relations
   assigneeId String?
@@ -51,7 +51,7 @@ model Task {
 
 model ActivityLog {
   id        String   @id @default(uuid())
-  action    String   // e.g. "created", "status_changed", "assigned"
+  action    String   // "created" | "updated" | "status_changed" | "assigned"
   metadata  String   @default("{}")  // JSON stringified
   createdAt DateTime @default(now())
 
