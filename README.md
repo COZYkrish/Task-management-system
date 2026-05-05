@@ -648,105 +648,1014 @@ task-management-system/
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Node.js v18+
-- npm or yarn
+### 📋 Prerequisites
 
-### 1. Clone & Install
+Ensure you have the following installed on your system:
+
+- **Node.js** — v18.0.0 or higher (download from [nodejs.org](https://nodejs.org))
+- **npm** — v9.0.0+ (comes with Node.js) or **yarn** v3.0+
+- **Git** — for version control (optional but recommended)
+- **SQLite** — included with Prisma, no separate installation needed
+- **Text Editor** — VS Code, WebStorm, or any code editor
+
+Check your versions:
+```bash
+node --version      # Should be >= v18.0.0
+npm --version       # Should be >= v9.0.0
+git --version       # Optional
+```
+
+---
+
+## 📥 Installation & Setup
+
+### Step 1️⃣ — Clone Repository
 
 ```bash
-# Install server dependencies
+# Navigate to your desired directory
+cd ~/projects
+
+# Clone the repository
+git clone https://github.com/yourusername/task-management-system.git
+cd task-management-system
+
+# Explore project structure
+ls -la
+```
+
+### Step 2️⃣ — Install Server Dependencies
+
+```bash
 cd server
+
+# Install all backend dependencies
 npm install
 
-# Install client dependencies
+# What gets installed:
+# • Express.js — Web framework
+# • Prisma — ORM for database
+# • Socket.io — WebSocket library
+# • JWT libraries — Authentication
+# • Joi — Schema validation
+# • Security packages (Helmet, CORS, etc)
+
+# Verify installation
+npm list
+
+# Check specific packages
+npm list express prisma socket.io
+```
+
+### Step 3️⃣ — Install Client Dependencies
+
+```bash
 cd ../client
+
+# Install all frontend dependencies
 npm install
+
+# What gets installed:
+# • React 19 — UI library
+# • Vite — Build tool
+# • Redux Toolkit — State management
+# • React Router — Routing
+# • Tailwind CSS — Styling
+# • @dnd-kit — Drag and drop
+# • Socket.io-client — WebSocket client
+# • Zod — Schema validation
+# • Framer Motion — Animations
+
+npm list
 ```
 
-### 2. Setup Database
+### Step 4️⃣ — Database Setup
 
 ```bash
 cd server
 
-# Push schema to SQLite (creates dev.db automatically)
-.\node_modules\.bin\prisma db push
+# ─── Option A: Create from Schema (Recommended) ───────────────
+# This creates dev.db and applies all migrations
+npx prisma db push
 
-# Seed with demo data
+# ─── Option B: Run Migrations (if migrations folder exists) ───
+npx prisma migrate dev --name init
+
+# ─── View Database (opens GUI) ───────────────────────────────
+npx prisma studio
+
+# ─── Seed Database with Demo Data ────────────────────────────
 node prisma/seed.js
+
+# ─── Verify Database Setup ──────────────────────────────────
+# Check if dev.db file was created
+ls -la prisma/dev.db
 ```
 
-### 3. Start Development Servers
+### Step 5️⃣ — Environment Configuration
 
-**Terminal 1 — Backend:**
+Create a `.env` file in the server directory:
+
 ```bash
 cd server
-node src/app.js
-# Server runs on http://localhost:5000
+
+# Create .env file from example
+cp .env.example .env
+
+# Edit .env with your settings:
+cat > .env << EOF
+# Database
+DATABASE_URL="file:./dev.db"
+
+# Server
+NODE_ENV="development"
+PORT=5000
+CLIENT_URL="http://localhost:5173"
+
+# JWT Tokens
+JWT_SECRET="your-super-secret-jwt-key-min-32-chars-long-change-this-in-production"
+JWT_REFRESH_SECRET="your-super-secret-refresh-key-min-32-chars-long-change-this"
+JWT_EXPIRY="15m"
+JWT_REFRESH_EXPIRY="7d"
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# CORS
+ALLOWED_ORIGINS="http://localhost:5173,http://localhost:3000"
+
+# Environment
+NODE_ENV="development"
+EOF
 ```
 
-**Terminal 2 — Frontend:**
+### Step 6️⃣ — Start Development Servers
+
+**Terminal 1 — Start Backend Server:**
+
+```bash
+cd server
+
+# Option A: Development (with auto-reload using nodemon)
+npm run dev
+# Server will be available at: http://localhost:5000
+
+# Option B: Production
+npm start
+
+# You should see:
+# ✅ Server is running on http://localhost:5000
+# ✅ Socket.io listening
+# ✅ Prisma client ready
+```
+
+**Terminal 2 — Start Frontend Development Server:**
+
 ```bash
 cd client
+
+# Start Vite dev server with hot module replacement
 npm run dev
-# App runs on http://localhost:5173
+
+# You should see:
+# ➜  Local:   http://localhost:5173/
+# ➜  press h + enter to show help
+
+# App will auto-reload when you save files
 ```
 
-### 4. Login
+### Step 7️⃣ — Verify Installation
 
-Open `http://localhost:5173` in your browser.
+Open your browser and navigate to:
 
-| Role | Email | Password |
-|---|---|---|
-| Admin | admin@taskflow.com | Admin@1234 |
-| User  | demo@taskflow.com  | User@1234  |
+```
+http://localhost:5173
+```
+
+You should see:
+- 🎨 TaskFlow Pro login page
+- 🌙 Dark mode interface
+- 📱 Responsive design
+- ✨ Smooth animations
+
+### Step 8️⃣ — Login with Demo Credentials
+
+| Role | Email | Password | Access Level |
+|---|---|---|---|
+| 👑 Admin | admin@taskflow.com | Admin@1234 | Full system access, user management |
+| 👤 User | demo@taskflow.com | User@1234 | Create/manage own tasks |
+
+**First Login Steps:**
+1. Click "Login" button
+2. Enter email: `admin@taskflow.com`
+3. Enter password: `Admin@1234`
+4. Click "Sign In"
+5. Dashboard loads with initial data
 
 ---
 
-## 📡 API Reference
+## 🛠️ Development Workflow
 
-### Auth
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/auth/register` | Register new account |
-| POST | `/api/auth/login` | Login, returns tokens |
-| POST | `/api/auth/refresh` | Rotate refresh token |
-| POST | `/api/auth/logout` | Invalidate session |
+### Common Development Commands
 
-### Tasks
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/tasks` | List tasks (paginated, filterable) |
-| POST | `/api/tasks` | Create task |
-| GET | `/api/tasks/:id` | Get task + activity |
-| PUT | `/api/tasks/:id` | Update task |
-| DELETE | `/api/tasks/:id` | Delete task |
-| PATCH | `/api/tasks/reorder` | Kanban bulk reorder |
+#### Backend Commands
+```bash
+cd server
 
-### Users
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/users/me` | Get own profile |
-| PUT | `/api/users/me` | Update profile |
-| GET | `/api/users` | List all users (Admin) |
+# Development
+npm run dev              # Start with auto-reload
+npm start               # Start production server
 
-### Activity
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/activity` | Global activity feed |
-| GET | `/api/activity/task/:id` | Per-task history |
+# Database
+npm run db:migrate      # Create new migration
+npm run db:push         # Apply schema to database
+npm run db:seed         # Populate with demo data
+npm run db:studio       # Open Prisma Studio GUI
+npm run db:reset        # Reset database (⚠️ deletes all data)
+
+# Useful for debugging
+npm run setup           # Fresh database setup
+```
+
+#### Frontend Commands
+```bash
+cd client
+
+# Development
+npm run dev             # Start Vite dev server
+npm run build           # Build for production
+npm run preview         # Preview production build
+
+# Code Quality
+npm run lint            # Run ESLint
+npm run lint:fix        # Fix linting issues
+```
+
+### Useful Development Tools
+
+#### 🗄️ Prisma Studio
+```bash
+cd server
+npx prisma studio
+# Opens browser GUI at http://localhost:5555
+# View/edit database records visually
+```
+
+#### 🐛 Browser DevTools
+- **React DevTools** — Inspect component tree, props, state
+- **Redux DevTools** — Time-travel debugging
+- **Network Tab** — Monitor API calls and WebSocket events
+
+#### 📝 Logging & Debugging
+```javascript
+// Frontend - Redux debugging
+import { useDispatch, useSelector } from 'react-redux';
+const state = useSelector(state => state);
+console.log('Redux State:', state);
+
+// Backend - Request logging
+// Morgan middleware logs all HTTP requests
+// Enable in production for monitoring
+```
 
 ---
 
-## 📊 Database Schema
+## 📚 API Documentation
 
-```
-User ──── Task (as creator)
-      └── Task (as assignee)
-      └── ActivityLog
+### 🔐 Authentication Endpoints
 
-Task ──── ActivityLog
+#### Register New User
+```http
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "SecurePass123!"
+}
+
+Response: 201 Created
+{
+  "message": "User registered successfully",
+  "user": {
+    "id": "uuid-xxx",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "USER"
+  }
+}
 ```
+
+#### Login
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@taskflow.com",
+  "password": "Admin@1234"
+}
+
+Response: 200 OK
+{
+  "message": "Login successful",
+  "tokens": {
+    "accessToken": "eyJhbGc...",  // 15 minutes validity
+    "refreshToken": "eyJhbGc..."  // 7 days validity
+  },
+  "user": {
+    "id": "uuid-xxx",
+    "name": "Admin User",
+    "email": "admin@taskflow.com",
+    "role": "ADMIN"
+  }
+}
+
+Cookies Set:
+- accessToken (HttpOnly, Secure)
+- refreshToken (HttpOnly, Secure)
+```
+
+#### Refresh Token
+```http
+POST /api/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "eyJhbGc..."
+}
+
+Response: 200 OK
+{
+  "accessToken": "eyJhbGc...",  // New token
+  "refreshToken": "eyJhbGc..."  // New refresh token
+}
+```
+
+#### Logout
+```http
+POST /api/auth/logout
+Authorization: Bearer <accessToken>
+
+Response: 200 OK
+{
+  "message": "Logged out successfully"
+}
+```
+
+### 📋 Task Endpoints
+
+#### Get All Tasks (Paginated & Filterable)
+```http
+GET /api/tasks?page=1&limit=10&status=TODO&priority=HIGH&search=API
+Authorization: Bearer <accessToken>
+
+Query Parameters:
+- page (number) — Page number (default: 1)
+- limit (number) — Items per page (default: 10)
+- status (string) — Filter: TODO | IN_PROGRESS | COMPLETED
+- priority (string) — Filter: LOW | MEDIUM | HIGH
+- search (string) — Search in title and description
+- sortBy (string) — Sort field: createdAt | priority | dueDate
+- sortOrder (string) — asc | desc
+
+Response: 200 OK
+{
+  "data": [
+    {
+      "id": "task-uuid",
+      "title": "Build API",
+      "description": "Create REST endpoints",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "dueDate": "2025-12-31",
+      "tags": ["backend", "api"],
+      "assignee": {
+        "id": "user-uuid",
+        "name": "John Doe",
+        "email": "john@example.com"
+      },
+      "creator": {
+        "id": "user-uuid",
+        "name": "Admin"
+      },
+      "createdAt": "2025-05-01T10:00:00Z",
+      "updatedAt": "2025-05-02T15:30:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 45,
+    "totalPages": 5
+  }
+}
+```
+
+#### Create Task
+```http
+POST /api/tasks
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+
+{
+  "title": "Design Dashboard",
+  "description": "Create mockups for dashboard",
+  "priority": "MEDIUM",
+  "dueDate": "2025-12-31",
+  "tags": ["design", "ui"],
+  "assigneeId": "user-uuid"  // Optional
+}
+
+Response: 201 Created
+{
+  "id": "task-uuid",
+  "title": "Design Dashboard",
+  "status": "TODO",
+  "priority": "MEDIUM",
+  "createdAt": "2025-05-05T10:00:00Z",
+  ...
+}
+```
+
+#### Get Task Details
+```http
+GET /api/tasks/:taskId
+Authorization: Bearer <accessToken>
+
+Response: 200 OK
+{
+  "task": {
+    "id": "task-uuid",
+    "title": "Build API",
+    ...
+  },
+  "activities": [
+    {
+      "id": "activity-uuid",
+      "action": "created",
+      "metadata": { /* changes */ },
+      "user": { "name": "Admin", "email": "admin@taskflow.com" },
+      "createdAt": "2025-05-01T10:00:00Z"
+    }
+  ]
+}
+```
+
+#### Update Task
+```http
+PATCH /api/tasks/:taskId
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+
+{
+  "title": "Build API v2",
+  "status": "IN_PROGRESS",
+  "priority": "HIGH",
+  "dueDate": "2025-12-15",
+  "assigneeId": "user-uuid"
+}
+
+Response: 200 OK
+{
+  "message": "Task updated",
+  "task": { /* updated task */ }
+}
+```
+
+#### Delete Task
+```http
+DELETE /api/tasks/:taskId
+Authorization: Bearer <accessToken>
+
+Response: 204 No Content
+```
+
+#### Reorder Kanban Tasks (Bulk)
+```http
+PATCH /api/tasks/reorder
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+
+{
+  "tasks": [
+    { "id": "task-1", "status": "TODO", "order": 0 },
+    { "id": "task-2", "status": "TODO", "order": 1 },
+    { "id": "task-3", "status": "IN_PROGRESS", "order": 0 }
+  ]
+}
+
+Response: 200 OK
+{
+  "message": "Tasks reordered",
+  "updatedCount": 3
+}
+```
+
+### 👤 User Endpoints
+
+#### Get Current User Profile
+```http
+GET /api/users/me
+Authorization: Bearer <accessToken>
+
+Response: 200 OK
+{
+  "id": "user-uuid",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "role": "USER",
+  "avatar": "https://...",
+  "createdAt": "2025-01-15T08:00:00Z"
+}
+```
+
+#### Update Profile
+```http
+PATCH /api/users/me
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+
+{
+  "name": "Jane Doe",
+  "avatar": "https://avatar-url.jpg"
+}
+
+Response: 200 OK
+{
+  "message": "Profile updated",
+  "user": { /* updated user */ }
+}
+```
+
+#### Get All Users (Admin Only)
+```http
+GET /api/users
+Authorization: Bearer <adminToken>
+
+Response: 200 OK
+{
+  "data": [
+    { "id": "uuid-1", "name": "Admin", "email": "admin@taskflow.com", "role": "ADMIN" },
+    { "id": "uuid-2", "name": "John", "email": "john@taskflow.com", "role": "USER" }
+  ]
+}
+```
+
+### 📊 Activity Endpoints
+
+#### Global Activity Feed
+```http
+GET /api/activity?page=1&limit=20
+Authorization: Bearer <accessToken>
+
+Response: 200 OK
+{
+  "data": [
+    {
+      "id": "activity-uuid",
+      "action": "created",
+      "task": { "id": "task-uuid", "title": "Build API" },
+      "user": { "name": "Admin", "avatar": "..." },
+      "metadata": { "title": "Build API", "priority": "HIGH" },
+      "createdAt": "2025-05-05T10:00:00Z"
+    }
+  ]
+}
+```
+
+#### Task Activity History
+```http
+GET /api/activity/task/:taskId
+Authorization: Bearer <accessToken>
+
+Response: 200 OK
+{
+  "task": { "id": "task-uuid", "title": "Build API" },
+  "activities": [
+    {
+      "action": "created",
+      "metadata": { /* ... */ },
+      "user": { "name": "Admin" },
+      "createdAt": "2025-05-01T10:00:00Z"
+    },
+    {
+      "action": "status_changed",
+      "metadata": { "from": "TODO", "to": "IN_PROGRESS" },
+      "user": { "name": "John" },
+      "createdAt": "2025-05-02T15:30:00Z"
+    }
+  ]
+}
+```
+
+---
+
+## 🔌 WebSocket Events (Real-Time)
+
+### Socket.io Connection
+
+```javascript
+// Client connects
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:5000', {
+  auth: {
+    token: localStorage.getItem('accessToken')
+  }
+});
+
+socket.on('connect', () => {
+  console.log('Connected to server');
+});
+```
+
+### Task Events
+
+#### Task Created
+```javascript
+// Server sends when new task is created
+socket.on('task:created', (data) => {
+  {
+    taskId: 'uuid',
+    title: 'New Task',
+    createdBy: { id: 'uuid', name: 'John' },
+    timestamp: '2025-05-05T10:00:00Z'
+  }
+});
+```
+
+#### Task Updated
+```javascript
+socket.on('task:updated', (data) => {
+  {
+    taskId: 'uuid',
+    changes: {
+      title: { from: 'Old Title', to: 'New Title' },
+      priority: { from: 'LOW', to: 'HIGH' }
+    },
+    updatedBy: { name: 'John' },
+    timestamp: '2025-05-05T11:00:00Z'
+  }
+});
+```
+
+#### Task Status Changed
+```javascript
+socket.on('task:status_changed', (data) => {
+  {
+    taskId: 'uuid',
+    oldStatus: 'TODO',
+    newStatus: 'IN_PROGRESS',
+    changedBy: { name: 'John' },
+    timestamp: '2025-05-05T12:00:00Z'
+  }
+});
+```
+
+#### Task Assigned
+```javascript
+socket.on('task:assigned', (data) => {
+  {
+    taskId: 'uuid',
+    taskTitle: 'Build API',
+    assignedTo: { id: 'uuid', name: 'Jane', email: 'jane@example.com' },
+    assignedBy: { name: 'Admin' },
+    timestamp: '2025-05-05T13:00:00Z'
+  }
+});
+```
+
+#### Task Deleted
+```javascript
+socket.on('task:deleted', (data) => {
+  {
+    taskId: 'uuid',
+    title: 'Deleted Task',
+    deletedBy: { name: 'Admin' },
+    timestamp: '2025-05-05T14:00:00Z'
+  }
+});
+```
+
+### Notification Events
+
+```javascript
+socket.on('notification:new', (data) => {
+  {
+    type: 'task_assigned',  // or status_changed
+    title: 'You have been assigned',
+    message: 'Build API component',
+    taskId: 'uuid',
+    timestamp: '2025-05-05T15:00:00Z'
+  }
+});
+```
+
+---
+
+## 🔐 Security Features
+
+### 🛡️ Authentication & Authorization
+
+#### JWT Token Strategy
+- **Access Token** — 15-minute expiry, stored in HttpOnly cookie
+- **Refresh Token** — 7-day expiry, stored in HttpOnly cookie
+- **Automatic Rotation** — New tokens issued on refresh
+- **Secure Storage** — HttpOnly + Secure flags prevent XSS access
+
+```javascript
+// Token structure (decoded)
+{
+  "id": "user-uuid",
+  "email": "user@example.com",
+  "role": "USER",
+  "iat": 1620000000,
+  "exp": 1620900000
+}
+```
+
+#### Role-Based Access Control (RBAC)
+
+| Feature | Admin | User |
+|---------|-------|------|
+| Create tasks | ✅ | ✅ |
+| Edit own tasks | ✅ | ✅ |
+| Edit others' tasks | ✅ | ❌ |
+| Delete tasks | ✅ | ❌ |
+| View all users | ✅ | ❌ |
+| Manage roles | ✅ | ❌ |
+| View all activity | ✅ | ✅ (own only) |
+
+### 🔒 Data Protection
+
+#### Password Security
+```javascript
+// Passwords are:
+// • Hashed with bcryptjs (salt rounds: 12)
+// • Never stored in plain text
+// • Compared securely on login
+// • Always transmitted over HTTPS
+
+// Example hash: $2b$12$...extremely-long-hash...
+```
+
+#### SQL Injection Prevention
+```javascript
+// Prisma ORM prevents SQL injection via parameterized queries
+// ✅ Safe
+const user = await prisma.user.findUnique({
+  where: { email: userInput }
+});
+
+// ❌ Unsafe (would be vulnerable in raw SQL)
+// const user = await db.query(`SELECT * FROM users WHERE email = '${userInput}'`);
+```
+
+#### XSS Protection
+```javascript
+// React automatically escapes JSX content
+// ✅ Safe
+<div>{userProvidedContent}</div>  // Automatically escaped
+
+// Content in task descriptions is sanitized
+// Use react-dom/server's renderToString safely
+```
+
+### 🌐 Network Security
+
+#### CORS (Cross-Origin Resource Sharing)
+```javascript
+// Only allows requests from trusted origins
+cors({
+  origin: ['http://localhost:5173', 'https://taskflow.app'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PATCH', 'DELETE']
+})
+```
+
+#### Rate Limiting
+```javascript
+// Prevents brute force attacks
+// • 100 requests per 15 minutes per IP
+// • Different limits for auth endpoints
+// • Configurable via .env
+
+rateLimit({
+  windowMs: 900000,      // 15 minutes
+  max: 100,              // max requests
+  message: 'Too many requests'
+})
+```
+
+#### Helmet.js Headers
+```javascript
+// Automatically sets security headers:
+// • Content-Security-Policy
+// • X-Frame-Options
+// • X-Content-Type-Options
+// • X-XSS-Protection
+// • Referrer-Policy
+// • Strict-Transport-Security (HSTS)
+```
+
+### ✅ Input Validation
+
+#### Server-Side Validation (Joi)
+```javascript
+// Every API request validated with Joi schemas
+const schema = Joi.object({
+  title: Joi.string().required().max(200),
+  priority: Joi.string().valid('LOW', 'MEDIUM', 'HIGH'),
+  dueDate: Joi.date().iso()
+});
+
+// Returns 400 Bad Request if validation fails
+```
+
+#### Client-Side Validation (Zod + React Hook Form)
+```javascript
+// Form data validated before sending
+const taskSchema = z.object({
+  title: z.string().min(3).max(200),
+  priority: z.enum(['LOW', 'MEDIUM', 'HIGH'])
+});
+
+// Provides instant feedback to user
+```
+
+### 📝 Audit Logging
+
+Every action is logged with:
+- 👤 User who performed the action
+- 🔍 What action was performed
+- 📊 Before/after values
+- ⏰ Exact timestamp
+- 📍 IP address (server-side)
+
+This enables:
+- 🔎 **Compliance audits** — Full history of changes
+- 🚨 **Security investigation** — Trace suspicious activity
+- 📈 **Analytics** — Understand usage patterns
+- 🔄 **Undo capability** — Restore previous states if needed
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues & Solutions
+
+#### ❌ "Port 5000 already in use"
+```bash
+# Find process using port 5000
+netstat -ano | findstr :5000  # Windows
+lsof -i :5000                  # Mac/Linux
+
+# Kill the process (Windows)
+taskkill /PID <PID> /F
+
+# Or change PORT in .env
+PORT=5001
+```
+
+#### ❌ "Cannot find module 'prisma'"
+```bash
+cd server
+npm install
+npx prisma generate  # Generate Prisma client
+```
+
+#### ❌ "Database connection error"
+```bash
+# Verify DATABASE_URL in .env
+# Reset database if corrupted
+cd server
+npm run db:reset   # ⚠️ Deletes all data
+
+# Recreate with seed data
+npm run db:seed
+```
+
+#### ❌ "CORS error: Origin not allowed"
+```javascript
+// Update CORS settings in server/.env
+CLIENT_URL="http://localhost:5173"
+
+// Or in src/app.js
+cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true
+})
+```
+
+#### ❌ "Token expired / 401 Unauthorized"
+```javascript
+// Clear cookies and local storage
+localStorage.clear();
+// Tokens are automatically refreshed by middleware
+// If still failing, re-login
+```
+
+---
+
+## 📦 Deployment
+
+### Deploy to Production
+
+#### Vercel (Frontend)
+```bash
+# 1. Push to GitHub
+git push origin main
+
+# 2. Connect to Vercel
+# Go to vercel.com → New Project
+# Select your GitHub repo
+# Environment: Set VITE_API_URL=https://your-api.com
+
+# 3. Deploy (automatic on push)
+```
+
+#### Heroku / Railway (Backend)
+```bash
+# 1. Create Procfile
+echo "web: node src/app.js" > Procfile
+
+# 2. Set environment variables
+# PORT, DATABASE_URL (use PostgreSQL), JWT_SECRET, etc
+
+# 3. Deploy
+git push heroku main
+```
+
+#### Environment Variables for Production
+```env
+NODE_ENV=production
+CLIENT_URL=https://yourfrontend.com
+DATABASE_URL=postgresql://user:pass@host:5432/taskflow  # PostgreSQL
+JWT_SECRET=your-very-long-random-secret-key-min-32-chars
+JWT_REFRESH_SECRET=another-very-long-random-secret-key
+PORT=5000
+```
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how:
+
+1. **Fork** the repository
+2. **Create feature branch** — `git checkout -b feature/amazing-feature`
+3. **Commit changes** — `git commit -m 'Add amazing feature'`
+4. **Push branch** — `git push origin feature/amazing-feature`
+5. **Open Pull Request** — Describe your changes
+
+### Code Style
+- Use ESLint for consistency
+- Follow existing patterns
+- Add comments for complex logic
+- Test features before submitting
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see [LICENSE](LICENSE) file for details.
+
+---
+
+## 📞 Support
+
+Need help? 
+
+- 📖 **Documentation** — Check this README
+- 🐛 **Issues** — Report bugs on GitHub Issues
+- 💬 **Discussions** — Start a GitHub Discussion
+- 📧 **Email** — contact@taskflow.app
+
+---
+
+## 🙌 Acknowledgments
+
+Built with ❤️ using:
+- [React](https://react.dev) — UI library
+- [Express](https://expressjs.com) — Backend framework
+- [Prisma](https://prisma.io) — Database ORM
+- [Socket.io](https://socket.io) — Real-time communication
+- [Tailwind CSS](https://tailwindcss.com) — Styling
+- [Framer Motion](https://www.framer.com/motion/) — Animations
+
+---
+
+<div align="center">
+
+### 🎉 Thank You for Using TaskFlow Pro!
+
+Made with 💜 by the TaskFlow Team
+
+[⭐ Star on GitHub](https://github.com/yourusername/task-management-system) | [🐦 Follow on Twitter](https://twitter.com/taskflow) | [💼 LinkedIn](https://linkedin.com/company/taskflow)
+
+</div>
 
 SQLite is used for development (zero setup). Switch to PostgreSQL by updating `.env`:
 ```
