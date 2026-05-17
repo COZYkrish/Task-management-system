@@ -16,12 +16,12 @@ import {
 import {
   SortableContext,
   verticalListSortingStrategy,
-//   arrayMove,
-// } from '@dnd-kit/sortable';
-// import { useSortable } from '@dnd-kit/sortable';
-// import { CSS } from '@dnd-kit/utilities';
-// import { motion } from 'framer-motion';
-// import { Plus } from 'lucide-react';
+  arrayMove,
+} from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { motion } from 'framer-motion';
+import { Plus } from 'lucide-react';
 
 import {
   selectKanbanColumns,
